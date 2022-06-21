@@ -1,16 +1,17 @@
 import boto3
 from botocore.exceptions import ClientError
-from dotenv import load_dotenv
-import os
+#from dotenv import load_dotenv
+#import os
 
-load_dotenv()
-security=os.getenv('security_name')
+#load_dotenv()
+#security=os.getenv('security_name')
 
-ec2 = boto3.client('ec2')
 
-response = ec2.describe_vpcs()
-vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
-def create_security():
+def create_security(security):
+    ec2 = boto3.client('ec2')
+    response = ec2.describe_vpcs()
+    vpc_id = response.get('Vpcs', [{}])[0].get('VpcId', '')
+
     try:
         response = ec2.create_security_group(GroupName=security,
                                             Description='DESCRIPTION',
@@ -31,5 +32,6 @@ def create_security():
                 'IpRanges': [{'CidrIp': '0.0.0.0/0'}]}
             ])
         print('Ingress Successfully Set %s' % data)
+        return security_group_id
     except ClientError as e:
         print(e)
